@@ -57,6 +57,7 @@ jobs:
           cat > $P/app/src/main/AndroidManifest.xml <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET"/>
               <application android:label="Pad Simo 2027" android:icon="@mipmap/ic_launcher"
                   android:theme="@android:style/Theme.Black.NoTitleBar" android:hardwareAccelerated="true">
                   <activity android:name=".MainActivity" android:exported="true"
