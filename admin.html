@@ -80,7 +80,7 @@ td select.dur{padding:6px 8px;font-size:13px;border-radius:8px}
   <section class="card" id="keyCard" hidden>
     <h2>DKHOUL</h2>
     <label for="sec">L9 l'clé li f fichier CLE-SECRETE-PadSimo2027 (mra w7da f had l'appareil)</label>
-    <div class="tools"><input id="sec" autocomplete="off" spellcheck="false" placeholder="32 7arf"><button class="ok" id="saveKey">Dkhoul</button></div>
+    <div class="tools"><input id="sec" autocomplete="off" spellcheck="false" type="password" placeholder="Mot de passe"><button class="ok" id="saveKey">Dkhoul</button></div>
     <p class="note" id="kmsg"></p>
   </section>
 
@@ -96,6 +96,7 @@ td select.dur{padding:6px 8px;font-size:13px;border-radius:8px}
       <div class="lg"><span><i style="background:var(--yel)"></i>En attente: mazal ma khllsch</span><span><i style="background:var(--grn)"></i>Livré: khlls w tsift lih l'code</span><span><i style="background:var(--red)"></i>Refusé</span></div>
       <p class="note" id="msg"></p>
     </section>
+    <section class="card"><h2>MOT DE PASSE</h2><div class="tools"><input id="np1" type="password" placeholder="Mot de passe jdid" autocomplete="new-password"><input id="np2" type="password" placeholder="3awd ktbou" autocomplete="new-password"><button id="chpw">Bdl mot de passe</button></div><p class="note" id="pmsg"></p></section>
     <p style="text-align:center"><button class="sm" id="logout">Khrouj mn had l'appareil</button></p>
   </div>
 </main>
@@ -153,7 +154,7 @@ const fmt=t=>t?new Date(t).toLocaleDateString("fr-FR",{day:"2-digit",month:"shor
 const fmtCode=c=>c?c.slice(0,4)+" "+c.slice(4):"";
 async function load(silent){
   try{ROWS=await rpc("admin_list",{p_key:KEY});render();$("live").innerHTML=`<i></i>${new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}`}
-  catch(e){if(e.message==="cle"){logout("L’clé ma s7i7ach.")}else if(!silent)$("msg").innerHTML=`<span class="warn">${esc(e.message)}</span>`}
+  catch(e){if(e.message==="cle"){logout("Mot de passe tbdl, dkhl l’jdid.")}else if(!silent)$("msg").innerHTML=`<span class="warn">${esc(e.message)}</span>`}
 }
 function counts(){const c={all:ROWS.length,attente:0,livre:0,refuse:0};let rev=0;ROWS.forEach(r=>{c[r.status]=(c[r.status]||0)+1;if(r.status==="livre")rev+=r.price||0});return [c,rev]}
 function render(){
@@ -218,12 +219,13 @@ $("csv").onclick=()=>{
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="clients-padsimo-"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();a.remove();
   navigator.clipboard&&navigator.clipboard.writeText(csv.slice(1)).catch(()=>{});toast("✔ Fichier Excel (CSV) tsayb");
 };
+$("chpw").onclick=async()=>{const a=$("np1").value.trim(),b=$("np2").value.trim();const pm=(h,ok)=>$("pmsg").innerHTML=`<span class="${ok?"good":"warn"}">${h}</span>`;if(a.length<6)return pm("Khass 6 7rouf 3la l'a9al.");if(a!==b)return pm("Joj mots de passe machi b7al b7al.");try{await rpc("admin_set_key",{p_key:KEY,p_new:a});KEY=a;LS.set("ps8_key")(a);$("np1").value=$("np2").value="";pm("✔ Mot de passe tbdl. Khddm b l'jdid mn daba.",1)}catch(e){pm(esc(e.message))}};
 function logout(m){LS.del("ps8_key");KEY=null;$("app").hidden=true;$("keyCard").hidden=false;if(m)$("kmsg").innerHTML=`<span class="warn">${m}</span>`}
 $("logout").onclick=()=>logout("");
-$("saveKey").onclick=async()=>{const v=$("sec").value.trim().toLowerCase();if(!/^[0-9a-f]{32}$/.test(v)){$("kmsg").innerHTML='<span class="warn">Khass l’clé tkon 32 7arf.</span>';return}
-  KEY=v;try{await rpc("admin_list",{p_key:KEY});LS.set("ps8_key")(v);$("sec").value="";start()}catch(e){KEY=null;$("kmsg").innerHTML='<span class="warn">L’clé ma s7i7ach.</span>'}};
+$("saveKey").onclick=async()=>{const v=$("sec").value.trim();if(v.length<6){$("kmsg").innerHTML='<span class="warn">Dkhl l’mot de passe.</span>';return}
+  KEY=v;try{await rpc("admin_list",{p_key:KEY});LS.set("ps8_key")(v);$("sec").value="";start()}catch(e){KEY=null;$("kmsg").innerHTML='<span class="warn">Mot de passe ghalat.</span>'}};
 function start(){$("keyCard").hidden=true;$("app").hidden=false;load()}
-const k=LS.get("ps8_key");if(k&&/^[0-9a-f]{32}$/.test(k)){KEY=k;start()}else{$("keyCard").hidden=false}
+const k=LS.get("ps8_key");if(k&&k.length>=6){KEY=k;start()}else{$("keyCard").hidden=false}
 setInterval(()=>{if(KEY&&!document.hidden)load(true)},20000);
 }
 </script>
