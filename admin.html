@@ -134,6 +134,7 @@ const PS8={
   }
 };
 
+const CODEK="dddc4945927bc667c77add002f3a5cb1";
 const SB_URL="https://uxpqqvbemjskviqgryag.supabase.co",SB_KEY="sb_publishable_TAMI7K-Dqh1b-H-se7YTDg_M1xn7D_k",SELLER="Simo";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -190,7 +191,7 @@ $("rows").addEventListener("change",async e=>{
     if(el.dataset.act==="status")await save(r,{status:el.value}),toast("✔ "+ST[el.value]);
     if(el.dataset.act==="dur"){
       if(el.value===""){await save(r,{dur:null,code:null,exp:null});return}
-      const d=+el.value,code=await PS8.make(KEY,r.email,d,PS8.day()),chk=await PS8.check(KEY,r.email,code);
+      const d=+el.value,code=await PS8.make(CODEK,r.email,d,PS8.day()),chk=await PS8.check(CODEK,r.email,code);
       await save(r,{dur:d,code,exp:chk.exp?new Date(chk.exp).toISOString():null});toast("✔ Code wajd: "+fmtCode(code));
     }
     if(el.dataset.act==="price")await save(r,{price:el.value===""?null:+el.value.replace(/\D/g,"")}),toast("✔ Prix tsjjl");
